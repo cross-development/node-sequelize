@@ -1,21 +1,21 @@
-import jwt from "jsonwebtoken";
-import JWTUtils from "../../src/utils/jwt-utils";
+import jwt from 'jsonwebtoken';
+import JWTUtils from '../../src/utils/jwt-utils';
 
-describe("jwt utils", () => {
-  it("should return an access token", () => {
-    const payload = { email: "test@example.com" };
+describe('jwt utils', () => {
+  it('should return an access token', () => {
+    const payload = { email: 'test@example.com' };
 
     expect(JWTUtils.generateAccessToken(payload)).toEqual(expect.any(String));
   });
 
-  it("should return an refresh token", () => {
-    const payload = { email: "test@example.com" };
+  it('should return an refresh token', () => {
+    const payload = { email: 'test@example.com' };
 
     expect(JWTUtils.generateRefreshToken(payload)).toEqual(expect.any(String));
   });
 
-  it("should verify that the access token is valid", () => {
-    const payload = { email: "test@example.com" };
+  it('should verify that the access token is valid', () => {
+    const payload = { email: 'test@example.com' };
     const jwt = JWTUtils.generateAccessToken(payload);
 
     expect(JWTUtils.verifyAccessToken(jwt)).toEqual(
@@ -23,8 +23,8 @@ describe("jwt utils", () => {
     );
   });
 
-  it("should verify that the refresh token is valid", () => {
-    const payload = { email: "test@example.com" };
+  it('should verify that the refresh token is valid', () => {
+    const payload = { email: 'test@example.com' };
     const jwt = JWTUtils.generateRefreshToken(payload);
 
     expect(JWTUtils.verifyRefreshToken(jwt)).toEqual(
@@ -32,14 +32,14 @@ describe("jwt utils", () => {
     );
   });
 
-  it("should error if the access token is invalid", () => {
-    expect(() => JWTUtils.verifyAccessToken("invalid.token")).toThrow(
+  it('should error if the access token is invalid', () => {
+    expect(() => JWTUtils.verifyAccessToken('invalid.token')).toThrow(
       jwt.JsonWebTokenError
     );
   });
 
-  it("should error if the refresh token is invalid", () => {
-    expect(() => JWTUtils.verifyRefreshToken("invalid.token")).toThrow(
+  it('should error if the refresh token is invalid', () => {
+    expect(() => JWTUtils.verifyRefreshToken('invalid.token')).toThrow(
       jwt.JsonWebTokenError
     );
   });

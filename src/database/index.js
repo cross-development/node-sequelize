@@ -32,7 +32,9 @@ export default class Database {
     await this.connection.authenticate({ logging: false });
 
     if (!this.isTestEnvironment) {
-      console.log('Connection to the database has been established successfully');
+      console.log(
+        'Connection to the database has been established successfully'
+      );
     }
 
     // Register the models

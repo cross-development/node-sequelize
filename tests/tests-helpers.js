@@ -4,7 +4,7 @@ import dbConfig from '../src/config/database';
 
 let db;
 
-export default class TestHelpers {
+export default class TestsHelpers {
   static async startDb() {
     db = new Database('test', dbConfig);
     await db.connect();

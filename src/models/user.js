@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
 import { Model, DataTypes } from 'sequelize';
+import bcrypt from 'bcrypt';
 import environment from '../config/environment';
 
 export default (sequelize) => {
