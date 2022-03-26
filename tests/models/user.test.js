@@ -133,4 +133,69 @@ describe('User', () => {
       });
     });
   });
+
+  describe('scopes', () => {
+    let user;
+
+    beforeEach(async () => {
+      user = await TestsHelpers.createNewUser();
+    });
+
+    describe('defaultScope', () => {
+      it('should return a user without a password', async () => {
+        const { User } = models;
+
+        const userFound = await User.findByPk(user.id);
+        expect(userFound.password).toBeUndefined();
+      });
+    });
+
+    describe('withPassword', () => {
+      it('should return a user with password', async () => {
+        const { User } = models;
+
+        const userFound = await User.scope('withPassword').findByPk(user.id);
+        expect(userFound.password).toEqual(expect.any(String));
+      });
+    });
+  });
+
+  describe('instance methods', () => {
+    describe('comparePasswords', () => {
+      let password = 'Test123#';
+      let user;
+
+      beforeEach(async () => {
+        user = await TestsHelpers.createNewUser({ password });
+      });
+
+      it('should return true if the password is correct', async () => {
+        const { User } = models;
+
+        const userFound = await User.scope('withPassword').findByPk(user.id);
+        const isPasswordCorrect = await userFound.comparePasswords(password);
+
+        expect(isPasswordCorrect).toEqual(true);
+      });
+
+      it('should return false if the password is incorrect', async () => {
+        const { User } = models;
+
+        const userFound = await User.scope('withPassword').findByPk(user.id);
+        const isPasswordCorrect = await userFound.comparePasswords(
+          'invalidpassword'
+        );
+        expect(isPasswordCorrect).toEqual(false);
+      });
+    });
+  });
+
+  describe('hooks', () => {
+    it('should not attempt to hash the password if it is not given', async () => {
+      const user = await TestsHelpers.createNewUser();
+
+      user.email = 'test@example.com';
+      await user.save();
+    });
+  });
 });
