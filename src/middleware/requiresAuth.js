@@ -1,6 +1,7 @@
-import JWTUtils from '../utils/jwt-utils';
+// Utils
+import JWTUtils from '../utils/jwtUtils';
 
-export default function requiresAuth(tokenType = 'accessToken') {
+const requiresAuth = (tokenType = 'accessToken') => {
   return function (req, res, next) {
     const authHeader = req.headers.authorization;
 
@@ -41,4 +42,6 @@ export default function requiresAuth(tokenType = 'accessToken') {
       return res.status(401).send({ success: false, message: 'Invalid token' });
     }
   };
-}
+};
+
+export default requiresAuth;

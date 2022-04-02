@@ -1,9 +1,13 @@
+// Packages
 import { Model, DataTypes } from 'sequelize';
 
-export default (sequelize) => {
+const RoleModel = (sequelize) => {
   class Role extends Model {
     static associate(models) {
-      Role.belongsTo(models.User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' });
+      Role.belongsTo(models.User, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
     }
   }
 
@@ -14,3 +18,5 @@ export default (sequelize) => {
 
   return Role;
 };
+
+export default RoleModel;

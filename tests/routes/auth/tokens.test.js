@@ -1,9 +1,15 @@
-import TestsHelpers from '../../tests-helpers';
-import models from '../../../src/models';
+// Packages
 import request from 'supertest';
-import JWTUtils from '../../../src/utils/jwt-utils';
+// Models
+import models from '../../../src/models';
+// Utils
+import JWTUtils from '../../../src/utils/jwtUtils';
+// Helpers
+import { INVALID_TOKEN } from '../../../src/helpers/responseMessages';
+// Tests
+import TestsHelpers from '../../tests-helpers';
 
-describe('register', () => {
+describe('auth tokens', () => {
   let app;
   let newUserResponse;
 
@@ -27,7 +33,7 @@ describe('register', () => {
   describe('requiresAuth middleware', () => {
     it('should fail if the refresh token is invalid', async () => {
       const response = await request(app)
-        .post('/v1/token')
+        .post('/api/auth/tokens')
         .set('Authorization', 'Bearer invalidtoken')
         .send()
         .expect(401);
@@ -37,7 +43,10 @@ describe('register', () => {
     });
 
     it('should fail if no authorization header is present', async () => {
-      const response = await request(app).post('/v1/token').send().expect(401);
+      const response = await request(app)
+        .post('/api/auth/tokens')
+        .send()
+        .expect(401);
 
       expect(response.body.success).toEqual(false);
       expect(response.body.message).toEqual('Authorization header not found');
@@ -45,7 +54,7 @@ describe('register', () => {
 
     it('should fail if the authorization header is malformed', async () => {
       const response = await request(app)
-        .post('/v1/token')
+        .post('/api/auth/tokens')
         .set('Authorization', 'Invalid header')
         .send()
         .expect(401);
@@ -63,10 +72,10 @@ describe('register', () => {
         throw Error('test error');
       });
 
-      const refreshToken = newUserResponse.body.data.refreshToken;
+      const refreshToken = newUserResponse.body.data.tokens.refreshToken;
 
       const response = await request(app)
-        .post('/v1/token')
+        .post('/api/auth/tokens')
         .set('Authorization', `Bearer ${refreshToken}`)
         .send()
         .expect(500);
@@ -79,22 +88,28 @@ describe('register', () => {
   });
 
   it('should get a new access token successfully', async () => {
-    const refreshToken = newUserResponse.body.data.refreshToken;
+    const refreshToken = newUserResponse.body.data.tokens.refreshToken;
 
     const response = await request(app)
-      .post('/v1/token')
+      .post('/api/auth/tokens')
       .set('Authorization', `Bearer ${refreshToken}`)
       .send()
       .expect(200);
 
     expect(response.body.success).toEqual(true);
-    expect(response.body.data).toEqual({ accessToken: expect.any(String) });
+    expect(response.body.data).toEqual({
+      userId: expect.any(Number),
+      tokens: {
+        accessToken: expect.any(String),
+        refreshToken: expect.any(String),
+      },
+    });
   });
 
   it('should return 401 if there is no saved refresh token for the user', async () => {
     const { RefreshToken } = models;
 
-    const refreshToken = newUserResponse.body.data.refreshToken;
+    const refreshToken = newUserResponse.body.data.tokens.refreshToken;
     const savedRefreshToken = await RefreshToken.findOne({
       where: { token: refreshToken },
     });
@@ -103,12 +118,12 @@ describe('register', () => {
     await savedRefreshToken.save();
 
     const response = await request(app)
-      .post('/v1/token')
+      .post('/api/auth/tokens')
       .set('Authorization', `Bearer ${refreshToken}`)
       .send()
       .expect(401);
 
     expect(response.body.success).toEqual(false);
-    expect(response.body.message).toEqual('You must log in first');
+    expect(response.body.message).toEqual(INVALID_TOKEN);
   });
 });

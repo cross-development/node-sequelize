@@ -1,8 +1,10 @@
+// Packages
 import { Model, DataTypes } from 'sequelize';
 import bcrypt from 'bcrypt';
+// Configs
 import environment from '../config/environment';
 
-export default (sequelize) => {
+const UserModel = (sequelize) => {
   class User extends Model {
     static associate(models) {
       User.RefreshToken = User.hasOne(models.RefreshToken);
@@ -109,10 +111,16 @@ export default (sequelize) => {
     return await bcrypt.compare(password, this.password);
   };
 
+  User.prototype.toJSON = function () {
+    const values = Object.assign({}, this.get());
+
+    delete values.refreshToken;
+    return values;
+  };
+
   User.beforeSave(async (user, options) => {
     if (user.password) {
-      const hashedPassword = await User.hashPassword(user.password);
-      user.password = hashedPassword;
+      user.password = await User.hashPassword(user.password);
     }
   });
 
@@ -122,3 +130,5 @@ export default (sequelize) => {
 
   return User;
 };
+
+export default UserModel;

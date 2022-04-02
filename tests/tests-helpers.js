@@ -1,7 +1,10 @@
+// Configs
 import '../src/config';
-import Database from '../src/database';
 import dbConfig from '../src/config/database';
+// Packages
 import request from 'supertest';
+// Database
+import Database from '../src/database';
 
 let db;
 
@@ -57,7 +60,7 @@ export default class TestsHelpers {
     const {
       email = 'test@example.com',
       password = 'Test123#',
-      endpoint = '/v1/register',
+      endpoint = '/api/users/sign-up',
     } = options;
 
     return request(TestsHelpers.getApp())

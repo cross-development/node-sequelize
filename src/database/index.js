@@ -1,11 +1,15 @@
+// Packages
 import cls from 'cls-hooked';
 import { Sequelize } from 'sequelize';
+// Models
 import { registerModels } from '../models';
+// Utils
+import { databaseLogStream } from '../utils/logStream';
 
-export default class Database {
+class Database {
   constructor(environment, dbConfig) {
-    this.environment = environment;
     this.dbConfig = dbConfig;
+    this.environment = environment.trim();
     this.isTestEnvironment = this.environment === 'test';
   }
 
@@ -16,7 +20,7 @@ export default class Database {
 
     // Create the connection
     const { username, password, host, port, database, dialect } =
-      this.dbConfig[this.environment.trim()];
+      this.dbConfig[this.environment];
 
     this.connection = new Sequelize({
       username,
@@ -25,7 +29,7 @@ export default class Database {
       port,
       database,
       dialect,
-      logging: this.isTestEnvironment ? false : console.log,
+      logging: this.isTestEnvironment ? false : databaseLogStream,
     });
 
     // Check if we connected successfully
@@ -59,3 +63,5 @@ export default class Database {
     }
   }
 }
+
+export default Database;

@@ -1,9 +1,13 @@
-import TestsHelpers from '../../tests-helpers';
-import models from '../../../src/models';
+// Packages
 import request from 'supertest';
-import JWTUtils from '../../../src/utils/jwt-utils';
+// Models
+import models from '../../../src/models';
+// Helpers
+import { OK_RESPONSE } from '../../../src/helpers/responseMessages';
+// Tests
+import TestsHelpers from '../../tests-helpers';
 
-describe('register', () => {
+describe('auth sign-out', () => {
   let app;
   let newUserResponse;
 
@@ -25,10 +29,10 @@ describe('register', () => {
     });
   });
 
-  describe('logout', () => {
+  describe('sign-out', () => {
     it('should fail if the refresh token is invalid', async () => {
       const response = await request(app)
-        .post('/v1/logout')
+        .post('/api/auth/sign-out')
         .set('Authorization', 'Bearer invalidtoken')
         .send()
         .expect(401);
@@ -38,17 +42,17 @@ describe('register', () => {
     });
   });
 
-  it('should logout a user successfully', async () => {
-    const accessToken = newUserResponse.body.data.accessToken;
+  it('should sign-out a user successfully', async () => {
+    const accessToken = newUserResponse.body.data.tokens.accessToken;
 
     const response = await request(app)
-      .post('/v1/logout')
+      .post('/api/auth/sign-out')
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
       .expect(200);
 
     expect(response.body.success).toEqual(true);
-    expect(response.body.message).toEqual('Successfully logged out');
+    expect(response.body.message).toEqual(OK_RESPONSE);
 
     const { User, RefreshToken } = models;
 

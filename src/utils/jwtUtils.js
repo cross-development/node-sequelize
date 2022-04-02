@@ -1,7 +1,9 @@
+// Packages
 import jwt from 'jsonwebtoken';
+// Configs
 import environment from '../config/environment';
 
-export default class JWTUtils {
+class JWTUtils {
   static generateAccessToken(payload, options = {}) {
     const { expiresIn = '1d' } = options;
 
@@ -20,3 +22,5 @@ export default class JWTUtils {
     return jwt.verify(accessToken, environment.jwtRefreshTokenSecret);
   }
 }
+
+export default JWTUtils;

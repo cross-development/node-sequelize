@@ -1,8 +1,16 @@
-import TestsHelpers from '../../tests-helpers';
-import models from '../../../src/models';
+// Packages
 import request from 'supertest';
+// Models
+import models from '../../../src/models';
+// Helpers
+import {
+  OK_RESPONSE,
+  EMAIL_ALREADY_REGISTERED,
+} from '../../../src/helpers/responseMessages';
+// Tests
+import TestsHelpers from '../../tests-helpers';
 
-describe('register', () => {
+describe('user sign-up', () => {
   let app;
 
   beforeAll(async () => {
@@ -18,7 +26,7 @@ describe('register', () => {
     await TestsHelpers.syncDb();
   });
 
-  it('should register a new user successfully', async () => {
+  it('should sign-up a new user successfully', async () => {
     const data = {
       email: 'test@example.com',
       password: 'Test123#',
@@ -28,12 +36,12 @@ describe('register', () => {
       roles: ['admin', 'customer'],
     };
     const response = await request(app)
-      .post('/v1/register')
+      .post('/api/users/sign-up')
       .send(data)
       .expect(200);
 
     expect(response.body.success).toEqual(true);
-    expect(response.body.message).toEqual('User successfully registered');
+    expect(response.body.message).toEqual(OK_RESPONSE);
 
     const { User, Role, RefreshToken } = models;
     const users = await User.findAll({ include: [Role, RefreshToken] });
@@ -57,16 +65,16 @@ describe('register', () => {
 
   it('should not create a new user if it already exists', async () => {
     await request(app)
-      .post('/v1/register')
+      .post('/api/users/sign-up')
       .send({ email: 'test@example.com', password: 'Test123#' })
       .expect(200);
 
     const response = await request(app)
-      .post('/v1/register')
+      .post('/api/users/sign-up')
       .send({ email: 'test@example.com', password: 'Test123#' })
-      .expect(200);
+      .expect(409);
 
     expect(response.body.success).toEqual(false);
-    expect(response.body.message).toEqual('User already exists');
+    expect(response.body.message).toEqual(EMAIL_ALREADY_REGISTERED);
   });
 });

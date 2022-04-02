@@ -1,5 +1,7 @@
-import TestsHelpers from '../tests-helpers';
+// Models
 import models from '../../src/models';
+// Tests
+import TestsHelpers from '../tests-helpers';
 
 describe('User', () => {
   beforeAll(async () => {

@@ -1,6 +1,7 @@
+// Packages
 import { Model, DataTypes } from 'sequelize';
 
-export default (sequelize) => {
+const TokensModel = (sequelize) => {
   class RefreshToken extends Model {
     static associate(models) {
       RefreshToken.belongsTo(models.User, {
@@ -17,3 +18,5 @@ export default (sequelize) => {
 
   return RefreshToken;
 };
+
+export default TokensModel;
