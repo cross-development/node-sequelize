@@ -9,6 +9,7 @@ const UserModel = (sequelize) => {
     static associate(models) {
       User.RefreshToken = User.hasOne(models.RefreshToken);
       User.Roles = User.hasMany(models.Role);
+      User.Posts = User.hasMany(models.Post);
     }
 
     static async hashPassword(password) {
@@ -38,8 +39,8 @@ const UserModel = (sequelize) => {
             username,
             firstName,
             lastName,
-            RefreshToken: { token: refreshToken },
             Roles: rolesToSave,
+            RefreshToken: { token: refreshToken },
           },
           { include: [User.RefreshToken, User.Roles] }
         );
